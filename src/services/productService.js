@@ -9,13 +9,18 @@ class ProductService {
     }
 
     createProduct(data) {
-        const product = new Product({
-            id: randomUUID(),
-            ...data
-        });
+    const product = new Product({ id: randomUUID(), ...data });
+    const savedProduct = this.productRepository.save(product);
 
-        return this.productRepository.save(product);
+    if (this.logger) {
+        this.logger.info(
+            { productId: savedProduct.id },
+            'Product created'
+        );
     }
+
+    return savedProduct;
+}
 
     getAllProducts() {
         return this.productRepository.findAll();
@@ -42,12 +47,20 @@ class ProductService {
             updatedAt: new Date().toISOString()
         });
 
+        if (this.logger) {
+    this.logger.info({ productId: id }, 'Product updated');
+}
+
         return this.productRepository.save(updatedProduct);
     }
 
     deleteProduct(id) {
         this.getProductById(id);
         this.productRepository.deleteById(id);
+
+        if (this.logger) {
+    this.logger.info({ productId: id }, 'Product deleted');
+}
     }
 }
 
