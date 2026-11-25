@@ -3,10 +3,11 @@ const Order = require('../domain/order');
 const { NotFoundError, ConflictError } = require('../errors');
 
 class OrderService {
-    constructor(orderRepository, productRepository, maxOrderQuantity) {
+    constructor(orderRepository, productRepository, maxOrderQuantity, logger) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.maxOrderQuantity = maxOrderQuantity;
+        this.logger = logger;
     }
 
     placeOrder(items) {
@@ -72,7 +73,16 @@ class OrderService {
             totalAmount
         });
 
-        return this.orderRepository.save(order);
+        const savedOrder = this.orderRepository.save(order);
+
+        if (this.logger) {
+            this.logger.info(
+                { orderId: savedOrder.id, totalAmount: savedOrder.totalAmount },
+                'Order placed'
+            );
+        }
+
+        return savedOrder;
     }
 
     getAllOrders() {

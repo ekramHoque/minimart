@@ -3,8 +3,9 @@ const Product = require('../domain/product');
 const { NotFoundError } = require('../errors');
 
 class ProductService {
-    constructor(productRepository) {
-        this.productRepository = productRepository;
+    constructor(productRepository, logger) {
+    this.productRepository = productRepository;
+    this.logger = logger;
     }
 
     createProduct(data) {
